@@ -1,0 +1,5 @@
+package com.example.reservation.domain.user.entity;
+
+public enum Role {
+    ADMIN, MEMBER
+}
