@@ -1,5 +1,6 @@
 package com.example.reservation.domain.user.controller;
 
+import com.example.reservation.domain.user.dto.LoginRequestDto;
 import com.example.reservation.domain.user.dto.SignupRequestDto;
 import com.example.reservation.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,13 @@ public class UserController {
     public ResponseEntity<String> signup(@RequestBody SignupRequestDto dto) {
         userService.signup(dto);
         return ResponseEntity.ok("회원가입 성공");
-
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginRequestDto dto) {
+        String token = userService.login(dto);
+        return ResponseEntity.ok(token);
+    }
+
 
 }

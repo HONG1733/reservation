@@ -1,21 +1,11 @@
-package com.example.reservation.domain.instructor.entity;
+package com.example.reservation.domain.instructor.dto;
 
-import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "instructors")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
-@AllArgsConstructor
-public class Instructor {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class InstructorRequestDto {
 
     private String name;
     private String email;
@@ -27,6 +17,4 @@ public class Instructor {
     private String career;          //경력
     private String certificate;     //자격증
     private String introduction;    //소개글
-    private LocalDateTime createdAt;//등록일
-
 }
