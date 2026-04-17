@@ -1,5 +1,6 @@
 package com.example.reservation.domain.instructor.entity;
 
+import com.example.reservation.domain.user.entity.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,6 +22,9 @@ public class Instructor {
     private String email;
     private String password;
     private String phone;
+
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
 
     private String profileImageUrl; //사진
     private String speciality;      //전문분야

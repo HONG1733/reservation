@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -29,11 +31,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String email = jwtTokenProvider.getEmail(token);
             String role = jwtTokenProvider.getRole(token);
 
+            //UserDetails 객체 생성
+            UserDetails userDetails = User.builder()
+                    .username(email)
+                    .password("") // JWT 방식이므로 비밀번호 불필요
+                    .authorities(List.of(new SimpleGrantedAuthority("ROLE_" + role)))
+                    .build();
+
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
-                            email,
+                            userDetails,    // String -> UserDetails로 변경
                             null,
-                            List.of(new SimpleGrantedAuthority("ROLE_" + role))
+                            userDetails.getAuthorities()
                     );
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }

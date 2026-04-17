@@ -27,7 +27,7 @@ public class Reservation {
     private Lesson lesson;
 
     @Enumerated(EnumType.STRING)
-    private ReservationStatus reservationStatus;
+    private ReservationStatus status;
 
     private LocalDateTime reservedAt;
     private LocalDateTime canceledAt;

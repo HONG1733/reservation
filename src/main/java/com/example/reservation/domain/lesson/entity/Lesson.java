@@ -33,5 +33,5 @@ public class Lesson {
     @Enumerated(EnumType.STRING)
     private LessonType lessonType;
     @Enumerated(EnumType.STRING)
-    private LessonStatus lessonStatus;
+    private LessonStatus Status;
 }

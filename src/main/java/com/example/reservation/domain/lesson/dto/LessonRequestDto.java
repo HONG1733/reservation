@@ -1,22 +1,32 @@
 package com.example.reservation.domain.lesson.dto;
 
 import com.example.reservation.domain.instructor.entity.Instructor;
+import com.example.reservation.domain.lesson.entity.LessonType;
+import lombok.Getter;
 
+import java.time.LocalDateTime;
+
+@Getter
 public class LessonRequestDto {
 
-    private Instructor instructor;
+    private String title;
+    private String description;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+    private int maxCapacity;
+    private LessonType lessonType;
 
 }
 
 
 //private Long id;
 //private Instructor instructor;
-//private String title;
-//private String description;
-//private LocalDateTime startTime;
-//private LocalDateTime endTime;
-//private int maxCapacity;
-//private int currentCount;
-//private LocalDateTime createdAt;
-//private LessonType lessonType;
-//private LessonStatus lessonStatus;
+//private String title;             수업명
+//private String description;       수업설명
+//private LocalDateTime startTime;  시작시간
+//private LocalDateTime endTime;    종료시간
+//private int maxCapacity;          최대 정원
+//private int currentCount;         현재 예약인원
+//private LocalDateTime createdAt;  등록 일시
+//private LessonType lessonType;    수업 종류
+//private LessonStatus lessonStatus;수업 상태
