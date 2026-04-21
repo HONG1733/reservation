@@ -1,13 +1,17 @@
 package com.example.reservation.domain.lesson.dto;
 
-import com.example.reservation.domain.instructor.entity.Instructor;
 import com.example.reservation.domain.lesson.entity.LessonType;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
-public class LessonRequestDto {
+@NoArgsConstructor
+@AllArgsConstructor
+public class LessonCreateRequestDto {
 
     private String title;
     private String description;
@@ -29,4 +33,4 @@ public class LessonRequestDto {
 //private int currentCount;         현재 예약인원
 //private LocalDateTime createdAt;  등록 일시
 //private LessonType lessonType;    수업 종류
-//private LessonStatus lessonStatus;수업 상태
+//private LessonStatus status;      수업 상태

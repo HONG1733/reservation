@@ -23,13 +23,46 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
 
+
+
+        String uri = request.getRequestURI();
+        String bearer = request.getHeader("Authorization");
+
+        System.out.println("🔥 요청 URI = " + uri);
+        System.out.println("🔥 Authorization 헤더 = " + bearer);
+
+        // 1. 인증 제외 경로 (핵심)
+        if (uri.startsWith("/api/users/login") ||
+            uri.startsWith("/api/users/signup") ||
+            uri.startsWith("/api/instructors/login")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 2. 토큰 추출
         String token = resolveToken(request);
 
-        if (token != null && jwtTokenProvider.validateToken(token)) {
+        System.out.println("🔥 TOKEN = " + token);
+
+        // 토큰 없으면 그냥 다음 필터로 (Spring security가 처리)
+        if (token == null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 3. 토큰 검증
+        if (jwtTokenProvider.validateToken(token)) {
+
             String email = jwtTokenProvider.getEmail(token);
             String role = jwtTokenProvider.getRole(token);
+
+
+            System.out.println("🔥 EMAIL = " + email);
+            System.out.println("🔥 ROLE = " + role);
 
             //UserDetails 객체 생성
             UserDetails userDetails = User.builder()
@@ -40,11 +73,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
-                            userDetails,    // String -> UserDetails로 변경
+                            userDetails,
                             null,
                             userDetails.getAuthorities()
                     );
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            System.out.println("🔥 AUTH SET 완료");
+
         }
 
         filterChain.doFilter(request, response);

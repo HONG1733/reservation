@@ -3,6 +3,7 @@ package com.example.reservation.domain.user.service;
 import com.example.reservation.config.JwtTokenProvider;
 import com.example.reservation.domain.user.dto.LoginRequestDto;
 import com.example.reservation.domain.user.dto.SignupRequestDto;
+import com.example.reservation.domain.user.dto.UserResponseDto;
 import com.example.reservation.domain.user.dto.UserUpdateRequestDto;
 import com.example.reservation.domain.user.entity.Role;
 import com.example.reservation.domain.user.entity.User;
@@ -26,6 +27,7 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
 
     // 회원가입
+    @Transactional
     public void signup(SignupRequestDto dto) {
         // 1. 이메일 중복 체크
         if (userRepository.existsByEmail(dto.getEmail())) {
@@ -74,20 +76,9 @@ public class UserService {
             throw new UnauthorizedException("본인의 정보만 수정할 수 있습니다");
         }
 
-        // 이름 수정
-        if (dto.getName() != null) {
-            user.updateName(dto.getName());
-        }
+        // 수정 로직
+        user.update(dto, passwordEncoder);
 
-        // 전화번호 수정
-        if (dto.getPhone() != null) {
-            user.updatePhone(dto.getPhone());
-        }
-
-        // 비밀번호 수정
-        if (dto.getPassword() != null) {
-            user.updatePassword(passwordEncoder.encode(dto.getPassword()));
-        }
     }
 
     // 회원 탈퇴
@@ -110,6 +101,20 @@ public class UserService {
         // }
 
         userRepository.delete(user);
+    }
+
+    // 회원 조회
+    public UserResponseDto getMyPage(String email) {
+
+        // 사용자 조회
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("가입되지 않은 사용자입니다"));
+
+        return new UserResponseDto(
+                user.getName(),
+                user.getEmail(),
+                user.getPhone()
+        );
     }
 
 

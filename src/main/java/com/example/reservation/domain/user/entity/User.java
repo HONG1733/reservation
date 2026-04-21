@@ -1,7 +1,9 @@
 package com.example.reservation.domain.user.entity;
 
+import com.example.reservation.domain.user.dto.UserUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 public class User {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,16 +35,22 @@ public class User {
 
     private LocalDateTime createdAt;
 
-    public void updateName(String name) {
-        this.name = name;
-    }
+    public void update(UserUpdateRequestDto dto, PasswordEncoder passwordEncoder) {
 
-    public void updatePhone(String phone) {
-        this.phone = phone;
-    }
+        if (dto.getName() != null) {
+            this.name = dto.getName();
+        }
 
-    public void updatePassword(String password) {
-        this.password = password;
+        if (dto.getPhone() != null) {
+            this.phone = dto.getPhone();
+        }
+
+        if (dto.getPassword() != null) {
+            this.password = passwordEncoder.encode(dto.getPassword());
+        }
+
+
+
     }
 
 }

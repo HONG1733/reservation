@@ -22,6 +22,7 @@ public class Reservation {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lesson_id")
     private Lesson lesson;
@@ -29,7 +30,10 @@ public class Reservation {
     @Enumerated(EnumType.STRING)
     private ReservationStatus status;
 
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+
     private LocalDateTime reservedAt;
-    private LocalDateTime canceledAt;
+    private LocalDateTime cancelledAt;
 
 }
