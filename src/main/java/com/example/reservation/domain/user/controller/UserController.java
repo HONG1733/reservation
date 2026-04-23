@@ -52,7 +52,9 @@ public class UserController {
             @PathVariable Long userId,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        userService.deleteUser(userId, userDetails.getUsername());
+        Long currentUserId = Long.parseLong(userDetails.getUsername());
+
+        userService.deleteUser(userId, currentUserId);
         return ResponseEntity.ok("회원 탈퇴가 완료되었습니다");
     }
 

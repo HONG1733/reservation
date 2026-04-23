@@ -63,7 +63,7 @@ public class InstructorService {
             throw new RuntimeException("이메일 또는 비밀번호가 일치하지 않습니다");
         }
         // jwt 토큰 발급 후 반환
-        return jwtTokenProvider.generateToken(instructor.getEmail(), "INSTRUCTOR");
+        return jwtTokenProvider.generateToken(instructor.getId(), instructor.getEmail(), "INSTRUCTOR");
     }
 
     // 강사 목록 조회

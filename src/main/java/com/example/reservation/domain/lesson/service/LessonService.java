@@ -64,21 +64,23 @@ public class LessonService {
     public void updateLesson(Long lessonId, String email, LessonUpdateRequestDto dto) {
         // 수업 조회
         Lesson lesson = lessonRepository.findById(lessonId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 수업입니다."));
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 수업입니다"));
 
         // 본인 검증
         if (!email.equals(lesson.getInstructor().getEmail())) {
-            throw new IllegalStateException("본인 수업만 수정할 수 있습니다.");
+            throw new IllegalStateException("본인 수업만 수정할 수 있습니다");
         }
         
         // 시간 조건 체크
         if (LocalDateTime.now().isAfter(lesson.getStartTime().minusHours(24))) {
-            throw new IllegalStateException("수업 시간 24시간 전까지만 수정할 수 있습니다.");
+            throw new IllegalStateException("수업 시간 24시간 전까지만 수정할 수 있습니다");
         }
 
         // 예약 유무 확인
         // 예약이 있으면 수업 수정 불가
-        //if ()
+        if (lesson.getCurrentCount() >= 1) {
+            throw new IllegalStateException("예약이 있는 경우 수정할 수 없습니다");
+        }
 
         // 수정 로직
         lesson.update(dto);
@@ -97,10 +99,10 @@ public class LessonService {
             throw new IllegalStateException("본인 수업만 삭제할 수 있습니다.");
         }
 
-        // 예약 유무 확인 (추후 구현)
-        // if (reservationRepository.existsByLessonId(lessonId)) {
-        //     throw new IllegalStateException("예약이 있는 수업은 삭제할 수 없습니다.");
-        // }
+        // 예약 유무 확인
+        if (reservationRepository.existsByLessonId(lessonId)) {
+            throw new IllegalStateException("예약이 있는 수업은 삭제할 수 없습니다.");
+        }
 
         lessonRepository.delete(lesson);
     }

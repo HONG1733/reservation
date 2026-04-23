@@ -1,6 +1,9 @@
 package com.example.reservation.domain.user.service;
 
 import com.example.reservation.config.JwtTokenProvider;
+import com.example.reservation.domain.reservation.entity.Reservation;
+import com.example.reservation.domain.reservation.entity.ReservationStatus;
+import com.example.reservation.domain.reservation.repository.ReservationRepository;
 import com.example.reservation.domain.user.dto.LoginRequestDto;
 import com.example.reservation.domain.user.dto.SignupRequestDto;
 import com.example.reservation.domain.user.dto.UserResponseDto;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +29,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final ReservationRepository reservationRepository;
 
     // 회원가입
     @Transactional
@@ -62,7 +67,7 @@ public class UserService {
         }
 
         // 3. JWT 토큰 발급 후 반환
-        return jwtTokenProvider.generateToken(user.getEmail(), user.getRole().name());
+        return jwtTokenProvider.generateToken(user.getId(), user.getEmail(), user.getRole().name());
     }
 
     // 회원 정보 수정
@@ -83,22 +88,21 @@ public class UserService {
 
     // 회원 탈퇴
     @Transactional
-    public void deleteUser(Long userId, String currentUserEmail) {
+    public void deleteUser(Long userId, Long currentUserId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 회원입니다"));
 
         // 본인만 탈퇴 가능
-        if (!user.getEmail().equals(currentUserEmail)) {
+        if (!userId.equals(currentUserId)) {
             throw new UnauthorizedException("본인의 계정만 탈퇴할 수 있습니다");
         }
 
         // 예약 내역 확인 (진행 중인 예약이 있으면 탈퇴 불가)
-        // TODO: ReservationRepository 완성 후 추가
-        // List<Reservation> activeReservations = reservationRepository
-        //     .findByUserIdAndStatus(userId, ReservationStatus.CONFIRMED);
-        // if (!activeReservations.isEmpty()) {
-        //     throw new IllegalStateException("진행 중인 예약이 있어 탈퇴할 수 없습니다");
-        // }
+         List<Reservation> activeReservations = reservationRepository
+             .findByUserIdAndStatus(userId, ReservationStatus.CONFIRMED);
+         if (!activeReservations.isEmpty()) {
+             throw new IllegalStateException("진행 중인 예약이 있어 탈퇴할 수 없습니다");
+         }
 
         userRepository.delete(user);
     }

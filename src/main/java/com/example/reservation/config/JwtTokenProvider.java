@@ -16,9 +16,10 @@ public class JwtTokenProvider {
     private final long expiration = 1000 * 60 * 60 * 24; // 24시간
 
     // 토큰 생성
-    public String generateToken(String email, String role) {
+    public String generateToken(Long userId, String email, String role) {
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(userId.toString())
+                .claim("email", email)
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
@@ -28,7 +29,12 @@ public class JwtTokenProvider {
 
     //토큰에서 이메일 꺼내기
     public String getEmail(String token) {
-        return getClaims(token).getSubject();
+        return getClaims(token).get("email", String.class);
+    }
+
+    // 토큰에서 userId 꺼내기
+    public Long getUserId(String token) {
+        return Long.parseLong(getClaims(token).getSubject());
     }
 
     // 토큰에서 권한 꺼내기
