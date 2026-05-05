@@ -15,6 +15,7 @@ import com.example.reservation.global.exception.AuthenticationException;
 import com.example.reservation.global.exception.ResourceNotFoundException;
 import com.example.reservation.global.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +37,7 @@ public class UserService {
     public void signup(SignupRequestDto dto) {
         // 1. 이메일 중복 체크
         if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다");
         }
 
         // 2. 비밀번호 암호화
@@ -52,7 +53,12 @@ public class UserService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        userRepository.save(user);
+        // 동시 요청으로 인한 이메일 중복 방지
+        try{
+            userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다");
+        }
     }
 
     // 로그인

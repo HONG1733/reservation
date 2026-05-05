@@ -59,4 +59,13 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
+    public String getSubject(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();  // ← setSubject()로 저장한 값을 꺼냄
+    }
 }

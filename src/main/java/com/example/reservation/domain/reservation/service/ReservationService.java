@@ -31,7 +31,6 @@ public class ReservationService {
         User user = validateUser(userId);
 
         // 2. Lesson 조회
-        // lessonId로 수업 정보 조회
         Lesson lesson = lessonRepository.findById(request.getLessonId())
                 .orElseThrow(() -> new IllegalArgumentException("수업을 찾을 수 없습니다"));
 
@@ -43,7 +42,7 @@ public class ReservationService {
 
         // 4. 시간 검증
         // 수업 시간이 24시간 이상 남아있어야 함
-        validateBookingTime(startTime, endTime);
+        validateBookingTime(startTime);
 
         // 5. 정원 초과시 예약 불가
         validateLessonCapacity(lesson);
@@ -78,7 +77,7 @@ public class ReservationService {
 
 
     // 예약 취소
-    public ReservationCancelResponseDto reservationCancel(Long reservationId, Long userId) {
+    public ReservationCancelResponseDto cancelReservation(Long reservationId, Long userId) {
         // 예약 조회& 사용자 본인 검증
         Reservation reservation = validateUserOwnership(reservationId, userId);
 
@@ -88,7 +87,7 @@ public class ReservationService {
         // 수업 시작 24시간 전까지만 예약 취소 가능
         validateBookingTimeForCancel(reservation);
 
-        // 취소 처리 시작
+        // 상태 변경
         reservation.setStatus(ReservationStatus.CANCELLED);
         reservation.setCancelledAt(LocalDateTime.now());
 
@@ -177,7 +176,7 @@ public class ReservationService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
     }
 
-    private void validateBookingTime(LocalDateTime startTime, LocalDateTime endTime) {
+    private void validateBookingTime(LocalDateTime startTime) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime oneDayBefore = startTime.minusHours(24);  // 수업 24시간 전
 

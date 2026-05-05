@@ -6,6 +6,7 @@ import com.example.reservation.domain.reservation.dto.ReservationCreateResponseD
 import com.example.reservation.domain.reservation.service.ReservationService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,18 +21,24 @@ public class ReservationController {
 
     @Operation(summary = "예약 하기", description = "회원만 예약 가능")
     @PostMapping
-    public ReservationCreateResponseDto create(
-            @RequestParam Long userId,
-            @RequestBody ReservationCreateRequestDto request) {
-        return reservationService.reservationCreate(userId, request);
+    public ResponseEntity<ReservationCreateResponseDto> createReservation(
+            @RequestBody ReservationCreateRequestDto request,
+            @AuthenticationPrincipal UserDetails user
+    ) {
+        Long userId = Long.parseLong(user.getUsername());
+        ReservationCreateResponseDto result =
+                reservationService.reservationCreate(userId, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
-    @Operation(summary = "예약 취소", description = "봉인 예약만 취소 가능")
-    @DeleteMapping("/{reservationId}")
+    @Operation(summary = "예약 취소", description = "본인 예약만 취소 가능")
+    @PatchMapping("/{reservationId}")
     public ReservationCancelResponseDto cancelReservation(
             @PathVariable Long reservationId,
-            @RequestParam Long userId) {
-        return reservationService.reservationCancel(reservationId, userId);
+            @AuthenticationPrincipal UserDetails user
+    ) {
+        Long userId = Long.parseLong(user.getUsername());
+        return reservationService.cancelReservation(reservationId, userId);
     }
 
     @Operation(summary = "예약 목록 조회", description = "본인 예약 목록 조회 가능")

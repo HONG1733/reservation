@@ -57,16 +57,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 3. 토큰 검증
         if (jwtTokenProvider.validateToken(token)) {
 
+            Long userId = Long.parseLong(jwtTokenProvider.getSubject(token));
+
             String email = jwtTokenProvider.getEmail(token);
             String role = jwtTokenProvider.getRole(token);
 
 
+            System.out.println("🔥 USER ID = " + userId);
             System.out.println("🔥 EMAIL = " + email);
             System.out.println("🔥 ROLE = " + role);
 
             //UserDetails 객체 생성
             UserDetails userDetails = User.builder()
-                    .username(email)
+                    .username(userId.toString())
                     .password("") // JWT 방식이므로 비밀번호 불필요
                     .authorities(List.of(new SimpleGrantedAuthority("ROLE_" + role)))
                     .build();
